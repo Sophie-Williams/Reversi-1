@@ -1,6 +1,10 @@
 Reversi
 ===
 
-* Terminal Game
-* UI
+* [OK] Terminal Game
 * AI bot
+* UI
+
+---
+
+☯ Yinyanghu, 2014
