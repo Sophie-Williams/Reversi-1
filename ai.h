@@ -1,0 +1,5 @@
+class AI {
+    public:
+
+    private:
+}
