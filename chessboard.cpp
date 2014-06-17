@@ -4,10 +4,8 @@
 
 using namespace std;
 
-const int ChessBoard::dx[] = {0, 0, 1, 1, 1, -1, -1, -1};
-const int ChessBoard::dy[] = {1, -1, -1, 0, 1, -1, 0, 1};
-
 // WHITE first
+// Constructor
 ChessBoard::ChessBoard() {
     memset(disks, EMPTY, sizeof(disks));
     disks[3][3] = disks[4][4] = WHITE;     
@@ -24,6 +22,14 @@ void ChessBoard::initialize() {
 
     lastPlayer = BLACK;
     black = white = 2;
+}
+
+// Copy constructor
+ChessBoard::ChessBoard(const ChessBoard &chessBoard) {
+    memcpy(disks, chessBoard.disks, sizeof(disks));
+    lastPlayer = chessBoard.lastPlayer;
+    black = chessBoard.black;
+    white = chessBoard.white;
 }
 
 void ChessBoard::statistic() {
@@ -73,10 +79,12 @@ int ChessBoard::getWinner() {
 }
 
 // return 0, if failed
-int ChessBoard::play(int x, int y, int player) {
+int ChessBoard::play(int x, int y, int player, bool place) {
     if (!isPlayable(x, y, player)) return 0;
 
     int opponent = -player;
+
+    int ret = 1;
 
     for (int i = 0; i < direction; ++ i) {
         int nextX = x + dx[i];
@@ -90,17 +98,31 @@ int ChessBoard::play(int x, int y, int player) {
         if (flag && nextX >= 0 && nextX < row && nextY >= 0 && nextY < column && disks[nextX][nextY] == player) {
             int xx = x;
             int yy = y;
+            int total = -1;
             while (xx != nextX || yy != nextY) {
-                disks[xx][yy] = player;
+                ++ total;
+                if (place)
+                    disks[xx][yy] = player;
                 xx += dx[i];
                 yy += dy[i];
             }
+            ret += total;
         }
     }
 
-    lastPlayer = player;
+    if (place) {
+        lastPlayer = player;
+        if (player == WHITE) {
+            white += ret;
+            black -= (ret - 1);
+        }
+        else {
+            black += ret;
+            white -= (ret - 1);
+        }
+    }
 
-    return player;
+    return ret;
 }
 
 void ChessBoard::print() {
@@ -116,8 +138,9 @@ void ChessBoard::print() {
                 printf(" ");
             else
                 printf("+");
-        printf("\n");
+        printf("%d\n", i);
     }
+    printf(" 01234567\n");
 }
 
 bool ChessBoard::isPlayable(int x, int y, int player) {

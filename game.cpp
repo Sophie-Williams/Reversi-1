@@ -3,26 +3,34 @@
 #include <cstdio>
 
 #include "chessboard.h"
+#include "ai.h"
 
 using namespace std;
 
 ChessBoard chess;
 
+AI bot(&chess, BLACK);
+
 int main() {
     int x, y;
     while (!chess.isEnd()) {
-        chess.print();
         int player = chess.nextPlayer();
-        printf("next player = %d\n", player);
-        scanf("%d%d", &x, &y);
-        if (chess.play(x, y, player) == 0)
-            printf("invalid play!\n");
+        printf("=======White: %d, Black: %d, Player: %s=======\n", chess.white, chess.black, (player == WHITE) ? "White" : "Black");
+        chess.print();
+        if (player == BLACK) {
+            bot.play();
+        }
+        else {
+            scanf("%d%d", &x, &y);
+            if (chess.play(x, y, player, true) == 0)
+                printf("invalid play!\n");
+        }
     }
     chess.statistic();
-    if (chess.getWinner() == chess.WHITE)
-        printf("White wins!\n");
-    else if (chess.getWinner() == chess.BLACK)
-        printf("Black wins!\n");
+    if (chess.getWinner() == WHITE)
+        printf("White(You) wins!\n");
+    else if (chess.getWinner() == BLACK)
+        printf("Black(AI) wins!\n");
     else
         printf("Tie!\n");
     return 0;
